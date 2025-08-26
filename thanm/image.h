@@ -79,4 +79,10 @@ png_write(
     const char* filename,
     image_t* image);
 
+void
+jpeg_read_mem(
+    image_t *image,
+    void *data,
+    size_t len);
+
 #endif

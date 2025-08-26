@@ -26,11 +26,15 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH
  * DAMAGE.
  */
+#define HAVE_LIBJPEG
 #include <config.h>
 #include <string.h>
 #include <inttypes.h>
 #ifdef HAVE_LIBPNG
 #include <png.h>
+#endif
+#ifdef HAVE_LIBJPEG
+#include <jpeglib.h>
 #endif
 #include <stdlib.h>
 #include <errno.h>
@@ -335,5 +339,48 @@ png_write(
     png_destroy_write_struct(&png_ptr, &info_ptr);
 
     fclose(stream);
+}
+#endif
+
+#ifdef HAVE_LIBJPEG
+void
+jpeg_read_mem(
+    image_t *image,
+    void *data,
+    size_t len)
+{
+    struct jpeg_decompress_struct cinfo;
+    struct jpeg_error_mgr jerr;
+
+    JSAMPROW row_pointer[1];
+
+    cinfo.err = jpeg_std_error(&jerr);
+    jpeg_create_decompress(&cinfo);
+    jpeg_mem_src(&cinfo, data, len);
+    jpeg_read_header(&cinfo, TRUE);
+    jpeg_start_decompress(&cinfo);
+
+    image->width = cinfo.image_width;
+    image->height = cinfo.image_height;
+    image->format = FORMAT_RGBA8888;
+    image->data = malloc(image->width * image->height * 4);
+
+    uint8_t *pos = image->data;
+    uint8_t *line = malloc(image->width * 4);
+    while (cinfo.output_scanline < cinfo.image_height) {
+        row_pointer[0] = line;
+        jpeg_read_scanlines(&cinfo, row_pointer, 1);
+        for (size_t i = 0; i < cinfo.image_width; i++) {
+            pos[i * 4 + 0] = line[i * 3 + 0];
+            pos[i * 4 + 1] = line[i * 3 + 1];
+            pos[i * 4 + 2] = line[i * 3 + 2];
+            pos[i * 4 + 3] = 0xFF;
+        }
+        pos += cinfo.image_width * 4;
+    }
+    free(line);
+
+    jpeg_finish_decompress(&cinfo);
+    jpeg_destroy_decompress(&cinfo);
 }
 #endif

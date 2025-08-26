@@ -563,6 +563,12 @@ static const id_format_pair_t th18_patch[] = {
     { 0, NULL }
 };
 
+enum FileType {
+	FILETYPE_BITMAP,
+	FILETYPE_PNG,
+	FILETYPE_JPEG,
+};
+
 static inline int
 jfif_identify(uint8_t* jfif, uint32_t size) {
     return size >= 11 &&
@@ -1532,7 +1538,7 @@ anm_replace(
         return;
     }
 
-    int is_png = 0;
+    int entry_filetype = FILETYPE_BITMAP;
     if (TH19_OR_NEWER(version)) {
         anm_entry_t *entry = entry_first;
         const uint32_t ox = option_dont_add_offset_border ? 0 : entry->header->x;
@@ -1553,7 +1559,7 @@ anm_replace(
             fprintf(stderr, "%s: composing %s\n", argv0, filename);
         image = malloc(sizeof(image_t));
         png_read_mem(image, entry->data, entry->thtx->size);
-        is_png = 1;
+        entry_filetype = FILETYPE_PNG;
     } else {
         image = png_read(filename);
     }
@@ -1576,7 +1582,7 @@ anm_replace(
                 unsigned int y;
                 format_t fmt = formats[f];
 
-                if (is_png) {
+                if (entry_filetype == FILETYPE_PNG) {
                     if (fmt != FORMAT_BGRA8888) {
                         fprintf(stderr, "%s: %s is not FORMAT_BGRA8888\n", argv0, entry->name);
                         exit(1);
@@ -1609,7 +1615,7 @@ anm_replace(
 
                 free(converted_data);
 
-                if (is_png) {
+                if (entry_filetype == FILETYPE_PNG) {
                     image_t image2 = {
                         .data = entry->data,
                         .width = entry->thtx->w,
@@ -1638,11 +1644,15 @@ anm_replace(
 static unsigned char *
 entry_to_rgba(
     anm_entry_t *entry,
-    int is_png)
+    int filetype)
 {
-    if (is_png) {
+    if (filetype == FILETYPE_PNG) {
         image_t image;
         png_read_mem(&image, entry->data, entry->thtx->size);
+        return image.data;
+    } else if (filetype == FILETYPE_JPEG) {
+        image_t image;
+        jpeg_read_mem(&image, entry->data, entry->thtx->size);
         return image.data;
     } else {
         return format_to_rgba(entry->data, entry->thtx->w * entry->thtx->h, entry->thtx->format);
@@ -1681,14 +1691,19 @@ anm_extract(
 
     uint32_t ox = option_dont_add_offset_border ? 0 : entry->header->x;
     uint32_t oy = option_dont_add_offset_border ? 0 : entry->header->y;
-    int is_png = 0;
+    int filetype = FILETYPE_BITMAP;
 
     if (TH19_OR_NEWER(version)) {
         if (png_identify(entry->thtx->data, entry->thtx->size) &&
                 (ox || oy || entry->next_by_name)) {
             if (option_verbose >= 2)
                 fprintf(stderr, "%s: composing %s\n", argv0, filename);
-            is_png = 1;
+            filetype = FILETYPE_PNG;
+        } else if (jfif_identify(entry->thtx->data, entry->thtx->size) &&
+                (ox || oy || entry->next_by_name)) {
+            if (option_verbose >= 2)
+                fprintf(stderr, "%s: composing %s\n", argv0, filename);
+            filetype = FILETYPE_JPEG;
         } else {
             if (option_verbose >= 2)
                 fprintf(stderr, "%s: not composing %s\n", argv0, filename);
@@ -1716,7 +1731,7 @@ anm_extract(
             if (formats[f] == entryp->thtx->format) {
                 ox = option_dont_add_offset_border ? 0 : entryp->header->x;
                 oy = option_dont_add_offset_border ? 0 : entryp->header->y;
-                unsigned char* temp_data = entry_to_rgba(entryp, is_png);
+                unsigned char* temp_data = entry_to_rgba(entryp, filetype);
                 for (y = oy; y < oy + entryp->thtx->h; ++y) {
                     memcpy(image.data + y * image.width * 4 + ox * 4,
                         temp_data + (y - oy) * entryp->thtx->w * 4,
