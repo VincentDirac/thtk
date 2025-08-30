@@ -26,6 +26,7 @@ jobs:
           mingw-w64-ucrt-x86_64-cmake
           git
           mingw-w64-ucrt-x86_64-libjpeg-turbo
+        msystem: UCRT64
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
