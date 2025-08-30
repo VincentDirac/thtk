@@ -17,11 +17,15 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: recursive
-    - name: Install Dependencies
-      shell: cmd
-      run: |
-        call C:\shells\msys2bash.cmd -c "pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-cmake git mingw-w64-ucrt-x86_64-libjpeg-turbo"
-        call C:\shells\msys2bash.cmd -c "cp /c/msys64/ucrt64/bin/mingw32-make.exe /c/msys64/ucrt64/bin/make.exe"
+    - name: Install MSYS2 and required packages
+      uses: msys2/setup-msys2@v2
+      with:
+        update: true
+        install: >-
+          mingw-w64-ucrt-x86_64-toolchain
+          mingw-w64-ucrt-x86_64-cmake
+          git
+          mingw-w64-ucrt-x86_64-libjpeg-turbo
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
