@@ -28,6 +28,8 @@ jobs:
           git
           flex
           bison
+          groff
+          unix2dos
           mingw-w64-ucrt-x86_64-libjpeg-turbo
         msystem: UCRT64
     - name: Configure CMake
