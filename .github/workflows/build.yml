@@ -7,8 +7,8 @@ env:
   FLEXBISON_VER: 2.5.25
 
 jobs:
-  build-linux:
-    runs-on: ubuntu-22.04
+  build-win32-gcc-clang:
+    runs-on: windows-2025
     strategy:
       matrix:
         compiler: [gcc, clang]
@@ -17,6 +17,10 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: recursive
+    - name: Install Dependencies
+      shell: msys2 {0}
+      run: |
+        pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain cmake git mingw-w64-x86_64-libjpeg-turbo
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
@@ -24,78 +28,12 @@ jobs:
       run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build build --config ${{env.BUILD_TYPE}}
-
-  build-win32:
-    runs-on: windows-2022
-    strategy:
-      matrix:
-        arch: [x64, x86]
-    steps:
-    - name: Checkout
-      uses: actions/checkout@v4
-      with:
-        submodules: recursive
-    - name: Cache winflexbison
-      id: cache-winflexbison
-      uses: actions/cache@v4
-      with:
-        path: win_flex_bison-${{env.FLEXBISON_VER}}.zip
-        key: winflexbison-${{env.FLEXBISON_VER}}
-    - name: Download winflexbison
-      if: steps.cache-winflexbison.outputs.cache-hit != 'true'
-      run: curl -OL https://github.com/lexxmark/winflexbison/releases/download/v${{env.FLEXBISON_VER}}/win_flex_bison-${{env.FLEXBISON_VER}}.zip
-    - name: Extract winflexbison
-      run: |
-        mkdir bison
-        cd bison
-        7z x ../win_flex_bison-${{env.FLEXBISON_VER}}.zip
-    - name: Configure CMake
-      run: cmake -B build -A ${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
-    - name: Build
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
     - name: Prepare Dist
-      shell: cmd
+      shell: msys2 {0}
       run: |
-        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{matrix.arch}}
-        set THTK_ARCH=${{matrix.arch}}
-        call C:\shells\msys2bash.cmd -c "pacman -S --noconfirm --needed --noprogressbar groff dos2unix zip"
-        call C:\shells\msys2bash.cmd -c "./make-release.sh ci"
+        ./make-release.sh ci
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: thtk-win32-${{matrix.arch}}
+        name: thtk-win32-${{matrix.compiler}}
         path: thtk-bin-ci/**/*
-    - name: Upload Artifact PDBs
-      uses: actions/upload-artifact@v4
-      with:
-        name: thtk-win32-${{matrix.arch}}-pdbs
-        path: thtk-bin-ci-pdbs/**/*
-    - name: Upload Artifact to thpatch.net
-      env:
-        id_ed25519_secret: ${{ secrets.ID_ED25519_SECRET }}
-        arch: ${{matrix.arch}}
-      shell: powershell
-      run: |
-        echo $env:id_ed25519_secret | Out-File -encoding ASCII .\id_ed25519
-
-        $acl = Get-Acl .\id_ed25519
-        $AccessRule =
-          New-Object `
-          System.Security.AccessControl.FileSystemAccessRule(
-          [System.Security.Principal.WindowsIdentity]::GetCurrent().Name,
-          [System.Security.AccessControl.FileSystemRights]::Read,
-          [System.Security.AccessControl.AccessControlType]::Allow)
-        $acl.AddAccessRule($AccessRule)
-        $acl.SetAccessRuleProtection($true, # Enable protection (disable inheritance)
-          $false) # Don't keep previously inherited rules
-        Set-Acl -AclObject $acl -Path .\id_ed25519
-
-        New-Item -ItemType Directory -Path ~\.ssh
-        echo @'
-        kosuzu.thpatch.net,167.99.154.22,2604:a880:400:d1::755:f001 ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFn0EAmYnHylCYuaLMslQlDj8k/FHim/gRwP+L1eHQMw
-        kosuzu.thpatch.net,167.99.154.22,2604:a880:400:d1::755:f001 ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDbkY7C2SRL81klpa4iSYfbthJ4c82JiV8tx6vD63QJybp5/6WFDJY6/ow80g1hkszFU2pGUXX5mgjEFU80zgxSi/uFhLPD0FsXVdKUXe9pBquVXig+T8ApmrbORpq+IqJ2FGpz4zmEDHST8LX3ug60zfrChc7EXAyW5gbFh4fqryhgMdboNyo/gn608BN4P2AQGFgC7cOri0in+OhfAcKfrpBlMQ/ii+hFnS1ip3aP/npFhu9iCwmWPN1aBeQpwANUzf4kxOrJzLzLemfqpEW+AxtH2qNzWbe5tN9tEZCN2OtttW6ks6hzcYPiD+lfWcfDI4HEgpvGF7gdbRarKiyH
-        kosuzu.thpatch.net,167.99.154.22,2604:a880:400:d1::755:f001 ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBCzlGDhCYxkT3q0REJyMYTs2uFfTXSjPgK4/6ue/RKofzIP/9FJOi6y41G4UiofZWYvIQiJ8vfLXZMnYj80pDD0=
-        '@ | Set-Content -Encoding utf8 ~\.ssh\known_hosts
-
-        cmd /c "ssh -T thcrap-dev-deploy@kosuzu.thpatch.net -i .\id_ed25519 -- ""%GITHUB_REF_NAME%"" ""%arch%"" <thtk-bin-ci.zip"
-        Remove-Item .\id_ed25519
