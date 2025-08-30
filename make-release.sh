@@ -17,7 +17,7 @@ for i in thanm thanm.old thecl thdat thmsg thstd; do
 done
 cp build/thtk/libthtk.dll $releasepath/
 cp build/thtk/libthtk.dll.a $releasepath/
-cp ＂${ steps.msys2.outputs.msys2-location }/ucrt64/bin/libjpeg-8.dll＂ $releasepath/
+cp /d/a/_temp/msys64/ucrt64/bin/libjpeg-8.dll $releasepath/
 
 copy_doc() {
   while [ "$1" != "" ]; do
