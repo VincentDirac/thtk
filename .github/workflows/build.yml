@@ -21,6 +21,7 @@ jobs:
       shell: cmd
       run: |
         call C:\shells\msys2bash.cmd -c "pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain cmake git mingw-w64-x86_64-libjpeg-turbo"
+        call C:\shells\msys2bash.cmd -c "alias make='mingw32-make'"
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
