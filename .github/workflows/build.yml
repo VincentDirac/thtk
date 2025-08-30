@@ -20,23 +20,23 @@ jobs:
     - name: Install Dependencies
       shell: cmd
       run: |
-        call C:\msys64\usr\bin\bash.exe -c "pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-cmake git mingw-w64-ucrt-x86_64-libjpeg-turbo"
-        call C:\msys64\usr\bin\bash.exe -c "cp /c/msys64/ucrt64/bin/mingw32-make.exe /c/msys64/ucrt64/bin/make.exe"
+        call C:\shells\msys2bash.cmd -c "pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-toolchain mingw-w64-ucrt-x86_64-cmake git mingw-w64-ucrt-x86_64-libjpeg-turbo"
+        call C:\shells\msys2bash.cmd -c "cp /c/msys64/ucrt64/bin/mingw32-make.exe /c/msys64/ucrt64/bin/make.exe"
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
       shell: cmd
       run: |
-        call C:\msys64\usr\bin\bash.exe -c "cmake -B build"
+        call C:\shells\msys2bash.cmd -c "cmake -B build"
     - name: Build
       shell: cmd
       run: |
-        call C:\msys64\usr\bin\bash.exe -c "cmake --build build"
+        call C:\shells\msys2bash.cmd -c "cmake --build build"
     - name: Prepare Dist
       shell: cmd
       run: |
-        call C:\msys64\usr\bin\bash.exe -c "./make-release.sh ci"
+        call C:\shells\msys2bash.cmd -c "./make-release.sh ci"
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
