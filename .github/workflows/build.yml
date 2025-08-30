@@ -21,18 +21,18 @@ jobs:
       shell: cmd
       run: |
         call C:\shells\msys2bash.cmd -c "pacman -S --noconfirm --needed mingw-w64-ucrt-x86_64-toolchain cmake git mingw-w64-ucrt-x86_64-libjpeg-turbo"
-        call C:\shells\msys2bash.cmd -c "cp /c/msys64/ucrt64/bin/mingw32-make.exe /C/msys64/ucrt64/bin/make.exe"
+        call C:\shells\msys2bash.cmd -c "cp /c/msys64/ucrt64/bin/mingw32-make.exe /c/msys64/ucrt64/bin/make.exe"
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
       shell: cmd
       run: |
-        call C:\shells\msys2bash.cmd -c "cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}"
+        call C:\shells\msys2bash.cmd -c "cmake -B build
     - name: Build
       shell: cmd
       run: |
-        call C:\shells\msys2bash.cmd -c "cmake --build build --config ${{env.BUILD_TYPE}}"
+        call C:\shells\msys2bash.cmd -c "cmake --build build
     - name: Prepare Dist
       shell: cmd
       run: |
