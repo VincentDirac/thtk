@@ -25,17 +25,17 @@ jobs:
       env:
         CC: ${{matrix.compiler}}
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
-      shell: msys2 {0}
+      shell: cmd
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        call C:\shells\msys2bash.cmd -c "cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}"
     - name: Build
-      shell: msys2 {0}
+      shell: cmd
       run: |
-        cmake --build build --config ${{env.BUILD_TYPE}}
+        call C:\shells\msys2bash.cmd -c "cmake --build build --config ${{env.BUILD_TYPE}}"
     - name: Prepare Dist
-      shell: msys2 {0}
+      shell: cmd
       run: |
-        ./make-release.sh ci
+        call C:\shells\msys2bash.cmd -c "./make-release.sh ci"
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
