@@ -18,9 +18,9 @@ jobs:
       with:
         submodules: recursive
     - name: Install Dependencies
-      shell: msys2 {0}
+      shell: cmd
       run: |
-        pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain cmake git mingw-w64-x86_64-libjpeg-turbo
+        call C:\shells\msys2bash.cmd -c "pacman -S --noconfirm --needed mingw-w64-x86_64-toolchain cmake git mingw-w64-x86_64-libjpeg-turbo"
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
