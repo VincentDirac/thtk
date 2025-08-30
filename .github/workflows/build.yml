@@ -28,11 +28,11 @@ jobs:
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
       shell: cmd
       run: |
-        call C:\shells\msys2bash.cmd -c "cmake -B build
+        call C:\shells\msys2bash.cmd -c "cmake -B build"
     - name: Build
       shell: cmd
       run: |
-        call C:\shells\msys2bash.cmd -c "cmake --build build
+        call C:\shells\msys2bash.cmd -c "cmake --build build"
     - name: Prepare Dist
       shell: cmd
       run: |
