@@ -26,6 +26,8 @@ jobs:
           mingw-w64-ucrt-x86_64-clang
           mingw-w64-ucrt-x86_64-cmake
           git
+          flex
+          bison
           mingw-w64-ucrt-x86_64-libjpeg-turbo
         msystem: UCRT64
     - name: Configure CMake
