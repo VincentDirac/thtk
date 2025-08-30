@@ -29,7 +29,7 @@ jobs:
           flex
           bison
           groff
-          unix2dos
+          dos2unix
           mingw-w64-ucrt-x86_64-libjpeg-turbo
         msystem: UCRT64
     - name: Configure CMake
