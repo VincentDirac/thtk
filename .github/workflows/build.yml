@@ -25,9 +25,13 @@ jobs:
       env:
         CC: ${{matrix.compiler}}
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
-      run: cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      shell: msys2 {0}
+      run: |
+        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
-      run: cmake --build build --config ${{env.BUILD_TYPE}}
+      shell: msys2 {0}
+      run: |
+        cmake --build build --config ${{env.BUILD_TYPE}}
     - name: Prepare Dist
       shell: msys2 {0}
       run: |
