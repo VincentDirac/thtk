@@ -67,8 +67,8 @@ jobs:
         cd jpeg-9f
         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{matrix.arch}}
         nmake /f makefile.vs setup-v16
-        msbuild jpeg.sln /p:Configuration=Release /p:Platform=${{matrix.arch}}
-        msbuild apps.sln /p:Configuration=Release /p:Platform=${{matrix.arch}}
+        msbuild jpeg.sln /p:Platform=${{matrix.arch}}
+        msbuild apps.sln /p:Platform=${{matrix.arch}}
     - name: Configure CMake
       run: cmake -B build -A ${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DJPEG_LIBRARY_RELEASE=${{github.workspace}}/Release/${{matrix.arch}}/jpeg.lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
