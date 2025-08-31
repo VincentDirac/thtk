@@ -17,4 +17,4 @@ jobs:
       - name: Use the MSYS2 path
         shell: msys2 {0}
         run: |
-          echo "${{env.MSYS2_LOCATION}}""
+          echo "${{env.MSYS2_LOCATION}}"
