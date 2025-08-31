@@ -66,9 +66,7 @@ jobs:
       run: |
         cd jpeg-9f
         call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{matrix.arch}}
-        copy jconfig.vc jconfig.h
-        nmake /f makefile.vc
-        nmake /f makefile.vc setup-v17
+        nmake /f makefile.vs setup-v17
         msbuild jpeg.sln /p:Configuration=Release /p:Platform=${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} /p:RuntimeLibrary=MultiThreaded
         msbuild apps.sln /p:Configuration=Release /p:Platform=${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} /p:RuntimeLibrary=MultiThreaded
     - name: Configure CMake
