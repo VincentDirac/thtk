@@ -1,6 +1,6 @@
 find_package(BISON REQUIRED)
 find_package(FLEX REQUIRED)
-find_package(JPEG REQUIRED)
+find_package(JPEG)
 bison_target(AnmParse anmparse.y ${CMAKE_CURRENT_BINARY_DIR}/anmparse.c COMPILE_FLAGS ${BISON_FLAGS})
 flex_target(AnmScan anmscan.l ${CMAKE_CURRENT_BINARY_DIR}/anmscan.c)
 add_flex_bison_dependency(AnmScan AnmParse)
