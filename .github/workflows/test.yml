@@ -19,4 +19,4 @@ jobs:
           MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
         shell: msys2 {0}
         run: |
-          echo "${{env.MSYS2_LOCATION}}"
+          cd ${{env.MSYS2_LOCATION}}
