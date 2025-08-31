@@ -2,6 +2,10 @@ name: Build
 
 on: [push, pull_request]
 
+env:
+  BUILD_TYPE: RelWithDebInfo
+  FLEXBISON_VER: 2.5.25
+
 jobs:
   build-win32-gcc-clang:
     runs-on: windows-2025
@@ -36,11 +40,11 @@ jobs:
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
       shell: msys2 {0}
       run: |
-        cmake -B build
+        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       shell: msys2 {0}
       run: |
-        cmake --build build
+        cmake --build build --config ${{env.BUILD_TYPE}}
     - name: Prepare Dist
       shell: msys2 {0}
       run: |
