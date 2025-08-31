@@ -18,5 +18,5 @@ jobs:
 
       - name: Use the MSYS2 path
         run: |
-          set MSYS2_ROOT=${{ steps.msys2.outputs.msys2-location }}
+          set MSYS2_ROOT="${{ steps.msys2.outputs.msys2-location }}"
           echo "Do something with $MSYS2_ROOT"
