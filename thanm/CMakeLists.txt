@@ -9,7 +9,7 @@ add_executable(thanm
   thanm.c image.c anmmap.c reg.c expr.c
   thanm.h image.h anmmap.h reg.h expr.h
 )
-target_include_directories(thanm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
-target_link_libraries(thanm PRIVATE util $<$<BOOL:${PNG_FOUND}>:PNG::PNG> math setargv thtk_warning jpeg)
+target_include_directories(thanm PRIVATE ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR} ${JPEG_INCLUDE_DIR})
+target_link_libraries(thanm PRIVATE util $<$<BOOL:${PNG_FOUND}>:PNG::PNG> math setargv thtk_warning $<$<BOOL:${JPEG_LIBRARY_RELEASE}>:${JPEG_LIBRARY_RELEASE}> $<$<BOOL:${JPEG_FOUND}>:JPEG::JPEG>)
 install(TARGETS thanm)
 install(FILES thanm.1 DESTINATION ${CMAKE_INSTALL_MANDIR}/man1)
