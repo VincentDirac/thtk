@@ -60,7 +60,7 @@ jobs:
       run: curl -OL https://www.ijg.org/files/jpegsr9f.zip
     - name: Extract libjpeg
       run: |
-        7z x ../jpegsr9f.zip
+        7z x jpegsr9f.zip
     - name: Build libjpeg
       run: |
         cd jpeg-9f
