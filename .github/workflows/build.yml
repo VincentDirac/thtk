@@ -17,6 +17,20 @@ jobs:
       shell: cmd
       run: |
         choco install -y libjpeg-turbo
+    - name: Cache winflexbison
+      id: cache-winflexbison
+      uses: actions/cache@v4
+      with:
+        path: win_flex_bison-${{env.FLEXBISON_VER}}.zip
+        key: winflexbison-${{env.FLEXBISON_VER}}
+    - name: Download winflexbison
+      if: steps.cache-winflexbison.outputs.cache-hit != 'true'
+      run: curl -OL https://github.com/lexxmark/winflexbison/releases/download/v${{env.FLEXBISON_VER}}/win_flex_bison-${{env.FLEXBISON_VER}}.zip
+    - name: Extract winflexbison
+      run: |
+        mkdir bison
+        cd bison
+        7z x ../win_flex_bison-${{env.FLEXBISON_VER}}.zip
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
