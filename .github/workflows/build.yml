@@ -91,7 +91,6 @@ jobs:
         name: thtk-win32-msvc-${{matrix.arch}}-pdbs
         path: thtk-bin-ci-pdbs/**/*
 
-jobs:
   build-win32-msys2:
     runs-on: windows-2025
     strategy:
