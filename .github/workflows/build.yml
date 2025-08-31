@@ -41,7 +41,7 @@ jobs:
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
       shell: cmd
       run: |
-        cmake -B build -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake -B build -A ${{matrix.compiler}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       shell: cmd
       run: |
