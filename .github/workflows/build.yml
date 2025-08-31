@@ -126,7 +126,7 @@ jobs:
         MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
       shell: msys2 {0}
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DJPEG_INCLUDE_DIR=${{env.MSYS2_LOCATION}}/ucrt64/include -DJPEG_LIBRARY_RELEASE=${{env.MSYS2_LOCATION}}/ucrt64/lib/libjpeg.a
+        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DJPEG_INCLUDE_DIR=/d/a/_temp/msys64/ucrt64/include -DJPEG_LIBRARY_RELEASE=/d/a/_temp/msys64/ucrt64/lib/libjpeg.a
     - name: Build
       shell: msys2 {0}
       run: |
