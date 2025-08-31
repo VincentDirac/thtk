@@ -13,38 +13,25 @@ jobs:
       uses: actions/checkout@v4
       with:
         submodules: recursive
-    - name: Install MSYS2 and required packages
-      uses: msys2/setup-msys2@v2
-      with:
-        update: true
-        install: >-
-          mingw-w64-ucrt-x86_64-toolchain
-          mingw-w64-ucrt-x86_64-llvm
-          mingw-w64-ucrt-x86_64-clang
-          mingw-w64-ucrt-x86_64-cmake
-          git
-          flex
-          bison
-          groff
-          dos2unix
-          zip
-          mingw-w64-ucrt-x86_64-libjpeg-turbo
-        msystem: UCRT64
+    - name: Install libjpeg
+      shell: cmd
+      run: |
+        choco install -y libjpeg-turbo
     - name: Configure CMake
       env:
         CC: ${{matrix.compiler}}
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
-      shell: msys2 {0}
+      shell: cmd
       run: |
         cmake -B build
     - name: Build
-      shell: msys2 {0}
+      shell: cmd
       run: |
         cmake --build build
     - name: Prepare Dist
-      shell: msys2 {0}
+      shell: cmd
       run: |
-        ./make-release.sh ci
+        call C:\shells\msys2bash.cmd -c "./make-release.sh ci"
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
