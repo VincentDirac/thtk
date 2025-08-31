@@ -38,9 +38,10 @@ jobs:
       env:
         CC: ${{matrix.compiler}}
         CXX: ${{matrix.compiler == 'gcc' && 'g++' || 'clang++'}}
+        MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
       shell: msys2 {0}
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DJPEG_INCLUDE_DIR=${{env.MSYS2_LOCATION}}/ucrt64/include -DJPEG_LIBRARY=${{env.MSYS2_LOCATION}}/ucrt64/lib/libjpeg.dll.a
     - name: Build
       shell: msys2 {0}
       run: |
