@@ -7,8 +7,8 @@ env:
   FLEXBISON_VER: 2.5.25
 
 jobs:
-  build-win32-gcc-clang:
-    runs-on: windows-2025
+  build-win32-msys2-gcc-clang:
+    runs-on: windows-latest
     strategy:
       matrix:
         compiler: [gcc, clang]
@@ -41,7 +41,7 @@ jobs:
         MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
       shell: msys2 {0}
       run: |
-        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DJPEG_INCLUDE_DIR=${{env.MSYS2_LOCATION}}/ucrt64/include -DJPEG_LIBRARY=${{env.MSYS2_LOCATION}}/ucrt64/lib/libjpeg.dll.a
+        cmake -B build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}} -DJPEG_INCLUDE_DIR=${{env.MSYS2_LOCATION}}/ucrt64/include -DJPEG_LIBRARY=${{env.MSYS2_LOCATION}}/ucrt64/lib/libjpeg.a
     - name: Build
       shell: msys2 {0}
       run: |
@@ -53,5 +53,5 @@ jobs:
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: thtk-win32-${{matrix.compiler}}
+        name: thtk-win32-msys2-${{matrix.compiler}}
         path: thtk-bin-ci/**/*
