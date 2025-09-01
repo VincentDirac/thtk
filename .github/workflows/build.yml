@@ -49,29 +49,11 @@ jobs:
         mkdir bison
         cd bison
         7z x ../win_flex_bison-${{env.FLEXBISON_VER}}.zip
-    - name: Cache libjpeg
-      id: cache-libjpeg
-      uses: actions/cache@v4
-      with:
-        path: jpegsr9f.zip
-        key: jpegsr9f
-    - name: Download libjpeg
-      if: steps.cache-libjpeg.outputs.cache-hit != 'true'
-      run: curl -OL https://www.ijg.org/files/jpegsr9f.zip
-    - name: Extract libjpeg
+    - name: Install libjpeg
       run: |
-        7z x jpegsr9f.zip
-    - name: Build libjpeg
-      shell: cmd
-      run: |
-        cd jpeg-9f
-        call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" ${{matrix.arch}}
-        nmake /f makefile.vs setup-v16
-        msbuild jpeg.sln /p:Configuration=Release /p:Platform=${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} /p:RuntimeLibrary=MultiThreaded
-        msbuild apps.sln /p:Configuration=Release /p:Platform=${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} /p:RuntimeLibrary=MultiThreaded
+        vcpkg install ijg-libjpeg
     - name: Configure CMake
       run: |
-        vcpkg install jpeg
         cmake -B build -A ${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DJPEG_INCLUDE_DIR=${{github.workspace}}/jpeg-9f/ -DJPEG_LIBRARY_RELEASE=${{github.workspace}}/jpeg-9f/Release/${{matrix.arch}}/jpeg.lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build build --config ${{env.BUILD_TYPE}}
