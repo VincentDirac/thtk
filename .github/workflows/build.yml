@@ -50,8 +50,9 @@ jobs:
         cd bison
         7z x ../win_flex_bison-${{env.FLEXBISON_VER}}.zip
     - name: Install libjpeg
-      run: |
-        vcpkg install ijg-libjpeg
+      run: vcpkg install ijg-libjpeg
+    - name: Integrate vcpkg
+      run: vcpkg integrate install
     - name: Configure CMake
       run: |
         cmake -B build -A ${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
