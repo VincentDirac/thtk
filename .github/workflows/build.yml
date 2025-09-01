@@ -70,7 +70,9 @@ jobs:
         msbuild jpeg.sln /p:Configuration=Release /p:Platform=${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} /p:RuntimeLibrary=MultiThreaded
         msbuild apps.sln /p:Configuration=Release /p:Platform=${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} /p:RuntimeLibrary=MultiThreaded
     - name: Configure CMake
-      run: cmake -B build -A ${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DJPEG_INCLUDE_DIR=${{github.workspace}}/jpeg-9f/ -DJPEG_LIBRARY_RELEASE=${{github.workspace}}/jpeg-9f/Release/${{matrix.arch}}/jpeg.lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+      run: |
+        vcpkg install jpeg
+        cmake -B build -A ${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DJPEG_INCLUDE_DIR=${{github.workspace}}/jpeg-9f/ -DJPEG_LIBRARY_RELEASE=${{github.workspace}}/jpeg-9f/Release/${{matrix.arch}}/jpeg.lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build build --config ${{env.BUILD_TYPE}}
     - name: Prepare Dist
