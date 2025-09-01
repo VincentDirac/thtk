@@ -55,7 +55,7 @@ jobs:
       run: vcpkg install libjpeg-turbo:${{matrix.arch}}-windows-static
     - name: Configure CMake
       run: |
-        cmake -B build -A ${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DJPEG_INCLUDE_DIR=${{vcpkg.installation.root}}/packages/libjpeg-turbo_${{matrix.arch}}-windows-static/include -DJPEG_LIBRARY-RELEASE=${{vcpkg.installation.root}}/packages/libjpeg-turbo_${{matrix.arch}}-windows-static/lib/jpeg.lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
+        cmake -B build -A ${{matrix.arch == 'x86' && 'Win32' || matrix.arch}} -DBISON_EXECUTABLE=${{github.workspace}}/bison/win_bison.exe -DFLEX_EXECUTABLE=${{github.workspace}}/bison/win_flex.exe -DJPEG_INCLUDE_DIR=%VCPKG_INSTALLATION_ROOT%/packages/libjpeg-turbo_${{matrix.arch}}-windows-static/include -DJPEG_LIBRARY-RELEASE=%VCPKG_INSTALLATION_ROOT%/packages/libjpeg-turbo_${{matrix.arch}}-windows-static/lib/jpeg.lib -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
     - name: Build
       run: cmake --build build --config ${{env.BUILD_TYPE}}
     - name: Prepare Dist
