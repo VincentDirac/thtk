@@ -50,7 +50,9 @@ jobs:
         cd bison
         7z x ../win_flex_bison-${{env.FLEXBISON_VER}}.zip
     - name: Integrate vcpkg
-      run: vcpkg integrate install
+      run: |
+        vcpkg integrate install
+        echo %VCPKG_ROOT%
     - name: Install libjpeg
       run: vcpkg install libjpeg-turbo:${{matrix.arch}}-windows-static
     - name: Configure CMake
