@@ -51,7 +51,6 @@ jobs:
         7z x ../win_flex_bison-${{env.FLEXBISON_VER}}.zip
     - name: Install libjpeg
       run: |
-        vcpkg install libjpeg-turbo
         vcpkg install ijg-libjpeg
     - name: Configure CMake
       run: |
