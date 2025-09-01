@@ -65,7 +65,6 @@ jobs:
         set THTK_ARCH=${{matrix.arch}}
         call C:\shells\msys2bash.cmd -c "pacman -S --noconfirm --needed --noprogressbar groff dos2unix zip"
         call C:\shells\msys2bash.cmd -c "./make-release-msvc.sh ci"
-        call C:\shells\msys2bash.cmd -c "cp '$(cygpath "$VCToolsRedistDir")/${THTK_ARCH:-x86}/Microsoft.VC143.OPENMP/vcomp140.dll' thtk-bin-ci/"
     - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
